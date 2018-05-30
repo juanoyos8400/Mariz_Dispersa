@@ -29,11 +29,13 @@ class Coordenado{
 		vector<int> obtenerColumnaDispersaVector( Coordenado matriz_dispersa, int columnaj); 
 		int obtenerNumElementos(Coordenado matriz_dispersa);
 		Coordenado modificarPos(Coordenado matriz_dispersa, int element, int i, int j);
-		Coordenado suma(vector<vector<int> >matriz ,vector<vector<int> > matrizb);
-		vector<int> producto(vector<vector<int> >matriz , vector<int> b);
+		int obtnerMayorElemento(Coordenado matriz_dispersa);
+		bool verificarElemento(Coordenado matriz_dispersa, int element);
+		Coordenado suma(Coordenado matriz_dispersa1 , Coordenado matriz_dispersa2);
+		vector<int> producto(Coordenado matriz_dispersa, vector<int> b);
 		Coordenado transpuesta(vector<vector<int> >matriz );
 
-			
+
 };
 Coordenado Coordenado::crearDispersa(vector<vector<int> > matriz, int filas, int columnas){
 	Coordenado matriz_dispersa;
@@ -145,15 +147,61 @@ Coordenado Coordenado::modificarPos(Coordenado matriz_dispersa , int element, in
 	return nuevaMatriz_dispersa;
 
 }
-Coordenado Coordenado::suma (Coordenado matriz_dispersa1, Coordenado matriz_dispersa2){
-
-
-
-
-
+int Coordenado::obtnerMayorElemento(Coordenado matriz_dispersa){
+	int mayor = 0;
+	for (int i = 0; i < matriz_dispersa.valores.size(); ++i){
+		if (matriz_dispersa.valores[i] > mayor)
+		 	mayor = matriz_dispersa.valores[i];
+		}
+	return mayor;
+}
+bool Coordenado::verificarElemento(Coordenado matriz_dispersa,int element){
+	vector<vector<int> > matriz_completa = crearCompleta(matriz_dispersa);
+	for (int i = 0; i < matriz_dispersa.numfilas; ++i){
+		for (int j = 0; j < matriz_dispersa.numcolumnas; ++j){
+			if (matriz_completa[i][j] == element)
+				return true;
+		}
+	}
+	return false;
 
 }
+Coordenado Coordenado::suma (Coordenado matriz_dispersa1, Coordenado matriz_dispersa2){
+	vector<vector<int> > matriz1 = crearCompleta(matriz_dispersa1);
+	vector<vector<int> > matriz2 = crearCompleta(matriz_dispersa2);
+
+	//Llena de ceros la matriz//
+	vector<vector<int> >sumaMatriz(matriz_dispersa1.numfilas);
+	for (int i = 0; i < matriz_dispersa1.numfilas; i++){
+			sumaMatriz[i].resize(matriz_dispersa1.numcolumnas);
+	}
+	for (int i = 0; i < matriz_dispersa1.numfilas; ++i){
+		for (int j = 0; j < matriz_dispersa1.numcolumnas; ++j){
+			sumaMatriz[i][j] = matriz1[i][j] + matriz2[i][j];
+		}
+	}
+	for (int i = 0; i < matriz_dispersa1.numfilas; i++){
+		cout<<endl;
+		for (int j = 0; j < matriz_dispersa1.numcolumnas; j++){
+			cout<<"|"<<sumaMatriz[i][j]<<"|";
+		}
+	}
+	cout<<endl;
+	Coordenado sumaMatriz_dispersa = crearDispersa(sumaMatriz,  matriz_dispersa1.numfilas, matriz_dispersa1.numcolumnas);
+	return sumaMatriz_dispersa;
+}
+vector<int> Coordenado::producto(Coordenado matriz_dispersa, vector<int> multiplicador){
+	vector<vector<int> >matriz_completa = crearCompleta(matriz_dispersa);
+	vector<int> producto(matriz_dispersa.numfilas);
+	for (int i = 0; i < matriz_dispersa.numfilas; ++i){
+		for (int j = 0; j < matriz_dispersa.numcolumnas; ++j){
+			producto[i] += matriz_completa[i][j]*multiplicador[j];
+		}
+	}
+	return producto;
+}
 int main(){
+	std::vector<int> v = {1,1,1,1};
 	vector<vector<int> >matriz = {{1, 2 ,2 ,3 },	
 								  {0, 1, 2, 3}};
 	Coordenado coordenada;
@@ -161,7 +209,7 @@ int main(){
 	coordenada = coordenada.crearDispersa(matriz,2,4);
 	//******************************************//	
 
-	std::vector<std::vector<int> >matriz_completa = coordenada.crearCompleta(coordenada);
+	vector<vector<int> >matriz_completa = coordenada.crearCompleta(coordenada);
 	cout<<"MATRIZ COMPLETA"<<endl;
 	for (int i = 0; i < 2; i++){
 		cout<<endl;
@@ -221,8 +269,32 @@ int main(){
 	int elemento = 0, fila = 1, columna = 2; 
 	cout<<"ELEMNETO = "<<elemento<<" FILA = "<< fila<<" COLUMNA = "<<columna<<endl;
 	coordenada = coordenada.modificarPos(coordenada,0,1,2);
-	
 	//******************************************************///
+	cout<<"MAYOR ELEMENTO"<<endl;
+	int mayor = coordenada.obtnerMayorElemento(coordenada);
+	cout<<mayor<<endl;
+	//******************************************************///
+	cout<<"VERIFICAR ELEMENTO"<<endl;
+	int u2 = 0;
+	bool verificar = coordenada.verificarElemento(coordenada,u2);
+	cout<<"Elemento es "<<u2<<endl<<verificar<<endl;;	
+	//******************************************************///
+	cout<<"SUMA DE MATRICES"<<endl;
+	coordenada = coordenada.suma(coordenada,coordenada);
+	//******************************************************///
+	cout<<"PRODUCTO DE MATICES X VECTOR "<<endl;
+	cout<<"vector ";
+	for (int i = 0; i < v.size(); ++i){
+		cout<<"|"<<v[i]<<"|";
+	}
+	cout<<endl<<endl<<"RESULTADO ";
+
+	std::vector<int> producto = coordenada.producto(coordenada,v);
+	for (int i = 0; i < producto.size(); ++i){
+		cout<<"|"<<producto[i]<<"|";
+	}
+	cout<<endl;
+	
 
 
 	return 0;
